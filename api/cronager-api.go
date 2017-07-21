@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -85,6 +86,8 @@ func main() {
 			}
 		}
 		defer rows.Close()
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
 		c.JSON(http.StatusOK, gin.H{
 			"result": cronjobs,
 			"count":  len(cronjobs),
@@ -148,6 +151,20 @@ func main() {
 		})
 
 	})
+
+	router.OPTIONS("/job", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+		c.JSON(http.StatusOK, struct{}{})
+	})
+
+	router.OPTIONS("/jobs", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+		c.JSON(http.StatusOK, struct{}{})
+	})
+
+	router.Use(cors.Default())
 
 	router.Run(":3000")
 }

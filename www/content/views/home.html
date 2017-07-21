@@ -1,0 +1,16 @@
+<md-content ng-controller="tableCtrl">
+    <table ng-table="tableParams" class="table" show-filter="true">
+        <tr ng-repeat="cronjob in data">
+            <td title="'ID'" filter="{ id: 'number'}" sortable="'id'">
+                {{cronjob.id}}</td>
+            <td title="'Name'" filter="{ name: 'text'}" sortable="'name'">
+                {{cronjob.name}}</td>
+            <td title="'Cron Def'" filter="{ crondef: 'text'}" sortable="'crondef'">
+                {{cronjob.crondef}}</td>
+            <td title="'Command'" filter="{ command: 'text'}" sortable="'command'">
+                {{cronjob.command}}</td>
+            <td title="'Description'" filter="{ description: 'text'}" sortable="'description'">
+                {{cronjob.description}}</td>
+        </tr>
+    </table>
+</md-content>
