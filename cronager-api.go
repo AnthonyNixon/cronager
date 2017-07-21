@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 
@@ -113,40 +112,23 @@ func main() {
 		c.JSON(http.StatusOK, cronjob)
 	})
 
-	router.PUT("/job/:id", func(c *gin.Context) {
-		var buffer bytes.Buffer
-		id := c.Param("id")
-		name := c.PostForm("name")
-		crondef := c.PostForm("crondef")
-		command := c.PostForm("command")
-		description := c.PostForm("description")
-		active := c.PostForm("active")
+	router.PUT("/job", func(c *gin.Context) {
+		var cronjob Cronjob
+		c.BindJSON(&cronjob)
+
 		stmt, err := db.Prepare("update jobs set name = ?, crondef = ?, command = ?, description = ?, active = ? where id = ?;")
 
 		if err != nil {
 			fmt.Print(err.Error())
 		}
 
-		_, err = stmt.Exec(name, crondef, command, description, active, id)
+		_, err = stmt.Exec(cronjob.Name, cronjob.Cron_def, cronjob.Command, cronjob.Description, cronjob.Active, cronjob.Id)
 		if err != nil {
 			fmt.Print(err.Error())
 		}
 
-		// Append strings
-		buffer.WriteString(name)
-		buffer.WriteString(" ")
-		buffer.WriteString(crondef)
-		buffer.WriteString(" ")
-		buffer.WriteString(command)
-		buffer.WriteString(" ")
-		buffer.WriteString(description)
-		buffer.WriteString(" ")
-		buffer.WriteString(active)
 		defer stmt.Close()
-		cronjob_string := buffer.String()
-		c.JSON(http.StatusOK, gin.H{
-			"message": fmt.Sprintf(" %s successfully updated", cronjob_string),
-		})
+		c.JSON(http.StatusOK, cronjob)
 	})
 
 	router.DELETE("/job/:id", func(c *gin.Context) {
