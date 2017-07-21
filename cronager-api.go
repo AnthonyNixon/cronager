@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 
@@ -31,13 +30,13 @@ func main() {
 		fmt.Print(err.Error())
 	}
 	type Cronjob struct {
-		Id          int
-		Name        string
-		Command     string
-		Cron_def    string
-		Description string
-		Active      bool
-		Logtime     time.Time
+		Id          int       `json:"id"`
+		Name        string    `json:"name"`
+		Command     string    `json:"command"`
+		Cron_def    string    `json:"crondef"`
+		Description string    `json:"description"`
+		Active      bool      `json:"active"`
+		Logtime     time.Time `json:"logtime"`
 	}
 
 	router := gin.Default()
@@ -94,75 +93,42 @@ func main() {
 
 	// POST new cronjob
 	router.POST("/job", func(c *gin.Context) {
-		var buffer bytes.Buffer
-		name := c.PostForm("name")
-		crondef := c.PostForm("crondef")
-		command := c.PostForm("command")
-		description := c.PostForm("description")
-		active := c.PostForm("active")
+		var cronjob Cronjob
+		c.BindJSON(&cronjob)
 
 		stmt, err := db.Prepare("insert into jobs (name, crondef, command, description, active) values(?,?,?,?,?);")
 		if err != nil {
 			fmt.Print(err.Error())
 		}
 
-		_, err = stmt.Exec(name, crondef, command, description, active)
+		_, err = stmt.Exec(cronjob.Name, cronjob.Cron_def, cronjob.Command, cronjob.Description, cronjob.Active)
 
 		if err != nil {
 			fmt.Print(err.Error())
 		}
 
 		// Append strings
-		buffer.WriteString(name)
-		buffer.WriteString(" ")
-		buffer.WriteString(crondef)
-		buffer.WriteString(" ")
-		buffer.WriteString(command)
-		buffer.WriteString(" ")
-		buffer.WriteString(description)
-		buffer.WriteString(" ")
-		buffer.WriteString(active)
 		defer stmt.Close()
-		cronjob_string := buffer.String()
-		c.JSON(http.StatusOK, gin.H{
-			"message": fmt.Sprintf(" %s successfully created", cronjob_string),
-		})
+		c.JSON(http.StatusOK, cronjob)
 	})
 
-	router.PUT("/job/:id", func(c *gin.Context) {
-		var buffer bytes.Buffer
-		id := c.Param("id")
-		name := c.PostForm("name")
-		crondef := c.PostForm("crondef")
-		command := c.PostForm("command")
-		description := c.PostForm("description")
-		active := c.PostForm("active")
+	router.PUT("/job", func(c *gin.Context) {
+		var cronjob Cronjob
+		c.BindJSON(&cronjob)
+
 		stmt, err := db.Prepare("update jobs set name = ?, crondef = ?, command = ?, description = ?, active = ? where id = ?;")
 
 		if err != nil {
 			fmt.Print(err.Error())
 		}
 
-		_, err = stmt.Exec(name, crondef, command, description, active, id)
+		_, err = stmt.Exec(cronjob.Name, cronjob.Cron_def, cronjob.Command, cronjob.Description, cronjob.Active, cronjob.Id)
 		if err != nil {
 			fmt.Print(err.Error())
 		}
 
-		// Append strings
-		buffer.WriteString(name)
-		buffer.WriteString(" ")
-		buffer.WriteString(crondef)
-		buffer.WriteString(" ")
-		buffer.WriteString(command)
-		buffer.WriteString(" ")
-		buffer.WriteString(description)
-		buffer.WriteString(" ")
-		buffer.WriteString(active)
 		defer stmt.Close()
-		cronjob_string := buffer.String()
-		c.JSON(http.StatusOK, gin.H{
-			"message": fmt.Sprintf(" %s successfully updated", cronjob_string),
-		})
+		c.JSON(http.StatusOK, cronjob)
 	})
 
 	router.DELETE("/job/:id", func(c *gin.Context) {
