@@ -1,16 +1,22 @@
 <md-content ng-controller="tableCtrl">
-    <table ng-table="tableParams" class="table" show-filter="true">
-        <tr ng-repeat="cronjob in data">
-            <td title="'ID'" filter="{ id: 'number'}" sortable="'id'">
-                {{cronjob.id}}</td>
-            <td title="'Name'" filter="{ name: 'text'}" sortable="'name'">
-                {{cronjob.name}}</td>
-            <td title="'Cron Def'" filter="{ crondef: 'text'}" sortable="'crondef'">
-                {{cronjob.crondef}}</td>
-            <td title="'Command'" filter="{ command: 'text'}" sortable="'command'">
-                {{cronjob.command}}</td>
-            <td title="'Description'" filter="{ description: 'text'}" sortable="'description'">
-                {{cronjob.description}}</td>
-        </tr>
-    </table>
+    <mdt-table ng-if="loaded" mdt-row="{
+                      data: data,
+                      'column-keys': [
+                          'id',
+                          'name',
+                          'crondef',
+                          'command',
+                          'description',
+                          'active'
+                      ]
+                      }">
+        <mdt-header-row>
+            <mdt-column align-rule="left">ID</mdt-column>
+            <mdt-column align-rule="right">name</mdt-column>
+            <mdt-column align-rule="right">CronDef</mdt-column>
+            <mdt-column align-rule="right">Command</mdt-column>
+            <mdt-column align-rule="right">Description</mdt-column>
+            <mdt-column align-rule="right">Active</mdt-column>
+        </mdt-header-row>
+    </mdt-table>
 </md-content>

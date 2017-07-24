@@ -1,4 +1,4 @@
-angular.module('releaseGeneratorApp', ['ngMaterial', 'ngRoute', 'ngTable'])
+angular.module('cronagerApp', ['ngMaterial', 'ngRoute', 'mdDataTable'])
 
     .config(['$mdThemingProvider', '$routeProvider', '$locationProvider', function ($mdThemingProvider, $routeProvider, $locationProvider) {
         //Set up theme for the site using Target Red
@@ -9,7 +9,7 @@ angular.module('releaseGeneratorApp', ['ngMaterial', 'ngRoute', 'ngTable'])
         $routeProvider
             .when('/', {
                 templateUrl: template("home")
-            })
+            });
 
         function template(page) {
             return 'views/' + page + '.html';
@@ -41,9 +41,8 @@ angular.module('releaseGeneratorApp', ['ngMaterial', 'ngRoute', 'ngTable'])
 
         }])
 
-    .controller('tableCtrl', ['$scope', '$http', 'NgTableParams',
-        function ($scope, $http, NgTableParams) {
-            $scope.tableParams = new NgTableParams({}, { dataset: $scope.data});
+    .controller('tableCtrl', ['$scope', '$http',
+        function ($scope, $http) {
             $scope.data = [];
             $scope.loaded = false;
 
